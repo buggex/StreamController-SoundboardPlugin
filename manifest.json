@@ -1,6 +1,7 @@
 {
-    "version": "",
+    "version": "1.0",
     "thumbnail": "",
-    "id": "",
-    "name": ""
+    "id": "com_buggex_sc_soundboard",
+    "name": "Soundboard",
+    "auther": "buggex"
 }
