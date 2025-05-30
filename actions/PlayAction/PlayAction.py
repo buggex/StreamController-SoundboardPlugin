@@ -10,7 +10,7 @@ from com_buggex_sc_soundboard.helpers import Consts
 import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw, GLib
+from gi.repository import Gtk, Adw, GLib, Gio
 
 from loguru import logger as log
 
@@ -30,14 +30,15 @@ class PlayAction(ActionCore):
         ))
 
     def get_config_rows(self) -> list:
+        self.load_config_values()
+
         self.ui_sound_path = PathRow(self)
+        self.ui_sound_path.label.set_label(self.sound_path)
 
         self.ui_volume = Adw.SpinRow.new_with_range(min=0, max=100, step=1)
         self.ui_volume.set_title(self.plugin_base.lm.get("actions.play.volume.title"))
-        self.ui_volume.set_value(100)
+        self.ui_volume.set_value(self.sound_volume)
         self.ui_volume.connect("notify::value", self.on_sound_volume_changed)
-
-        self.load_config_values()
 
         return [self.ui_sound_path, self.ui_volume]
     
@@ -58,16 +59,17 @@ class PlayAction(ActionCore):
         
         path = settings.get(Consts.SETTING_SOUND_PATH)
         if path is not None:
-            self.ui_sound_path.label.set_label(path)
             self.sound_path = path
 
         volume = settings.get(Consts.SETTING_SOUND_VOLUME)
         if volume is not None:
-            self.ui_volume.set_value(volume)
             self.sound_volume = volume
 
     def on_key_down(self):
         self.plugin_base.backend.play_sound(self.sound_path, self.sound_volume)
+
+    def on_ready(self):
+        self.load_config_values()
 
 class PathRow(Adw.PreferencesRow):
     def __init__(self, action : PlayAction):
@@ -88,6 +90,8 @@ class PathRow(Adw.PreferencesRow):
 
         self.dialog = Gtk.FileDialog.new()
         self.dialog.set_title(action.plugin_base.lm.get("actions.play.path.dialog.title"))
+        if self.action.sound_path is not "":
+            self.dialog.set_initial_file(Gio.File.new_for_path(self.action.sound_path))
     
     def on_config(self, button):
         self.dialog.open(callback=lambda source_object, res: self.on_path_choosen(res))
@@ -99,5 +103,5 @@ class PathRow(Adw.PreferencesRow):
             self.label.set_label(path)
             self.action.on_sound_path_changed(path)
         except GLib.Error as e:
-            log.warning("Failed to open. Error: {e}")
+            log.warning(f"Failed to open. Error: {e}")
 
