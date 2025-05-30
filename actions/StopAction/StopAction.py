@@ -19,7 +19,7 @@ class StopAction(ActionCore):
         ))
     
     def on_ready(self) -> None:
-        icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
+        icon_path = os.path.join(self.plugin_base.PATH, "assets", "stop.png")
         self.set_media(media_path=icon_path, size=0.75)
 
     def on_key_down(self):

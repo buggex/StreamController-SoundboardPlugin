@@ -6,9 +6,6 @@ from src.backend.PluginManager.InputBases import ActionCore
 # Helpers
 from com_buggex_sc_soundboard.helpers import Consts
 
-# Import python modules
-import os
-
 # Import gtk modules - used for the config rows
 import gi
 gi.require_version("Gtk", "4.0")
@@ -68,10 +65,6 @@ class PlayAction(ActionCore):
         if volume is not None:
             self.ui_volume.set_value(volume)
             self.sound_volume = volume
-        
-    def on_ready(self) -> None:
-        icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
-        self.set_media(media_path=icon_path, size=0.75)
 
     def on_key_down(self):
         self.plugin_base.backend.play_sound(self.sound_path, self.sound_volume)
