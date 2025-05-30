@@ -1,9 +1,2 @@
-# PluginTemplate
-
-A simple plugin you can use as a starting point for your amazing creations!
-
-For more information checkout [the docs](https://streamcontroller.github.io/docs/latest/).
-
-# TODO
-* requriements
-* how to make real?
+# Soundboard plugin for [StreamController](https://github.com/StreamController)
+A small plugin that allows you to play a sound to a spesific audio device.
