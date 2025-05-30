@@ -26,9 +26,11 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
-class Soundbard(PluginBase):
+class Soundboard(PluginBase):
     def __init__(self):
         super().__init__()
+        
+        self.lm = self.locale_manager
 
         # Launch backend
         self.backend = SoundboardBackend()
@@ -44,7 +46,7 @@ class Soundbard(PluginBase):
             plugin_base = self,
             action_base = PlayAction,
             action_id = Consts.ID + "::PlayAction",
-            action_name = "Play sound",
+            action_name = self.lm.get("actions.play.title"),
         )
         self.add_action_holder(self.play_action_holder)
 
@@ -52,13 +54,13 @@ class Soundbard(PluginBase):
             plugin_base = self,
             action_base = StopAction,
             action_id = Consts.ID + "::StopAction",
-            action_name = "Stop sound",
+            action_name = self.lm.get("actions.stop.title"),
         )
         self.add_action_holder(self.stop_action_holder)
 
         # Register plugin
         self.register(
-            plugin_name = "Soundboard",
+            plugin_name = self.lm.get("plugin.name"),
             github_repo = "https://github.com/buggex/sc_soundboard",
             plugin_version = "1.0.0",
             app_version = "1.5.0-beta"
@@ -66,7 +68,7 @@ class Soundbard(PluginBase):
 
     def get_settings_area(self):
         self.device_model = Gtk.StringList().new(get_devices(DeviceFilter.SINK))
-        self.device_dropdown = Adw.ComboRow(model=self.device_model, title="Playback device:")
+        self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
 
         settings = self.get_settings()
         selected_device = settings.get(Consts.SETTING_DEVICE)

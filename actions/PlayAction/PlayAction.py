@@ -24,7 +24,7 @@ class PlayAction(ActionCore):
 
         self.add_event_assigner(EventAssigner(
             id="play",
-            ui_label="Play",
+            ui_label=self.plugin_base.lm.get("actions.play.label"),
             default_events=[Input.Key.Events.DOWN],
             callback=lambda data : self.on_key_down()
         ))
@@ -33,7 +33,7 @@ class PlayAction(ActionCore):
         self.ui_sound_path = PathRow(self)
 
         self.ui_volume = Adw.SpinRow.new_with_range(min=0, max=100, step=1)
-        self.ui_volume.set_title("Volume")
+        self.ui_volume.set_title(self.plugin_base.lm.get("actions.play.volume.title"))
         self.ui_volume.set_value(100)
         self.ui_volume.connect("notify::value", self.on_sound_volume_changed)
 
@@ -71,23 +71,23 @@ class PlayAction(ActionCore):
 
 class PathRow(Adw.PreferencesRow):
     def __init__(self, action : PlayAction):
-        super().__init__(title="Path:")
+        super().__init__()
         self.action = action
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
         self.set_child(self.main_box)
 
-        self.label = Gtk.Label(hexpand=True, label="Path to sound file...", xalign=0, margin_start=12)
+        self.label = Gtk.Label(hexpand=True, label=action.plugin_base.lm.get("actions.play.path.label"), xalign=0, margin_start=12)
         self.label.set_ellipsize(1)
         self.label.set_size_request(height=50, width=-1)
         self.main_box.append(self.label)
 
-        self.config_button = Gtk.Button(label="Browse")
+        self.config_button = Gtk.Button(label=action.plugin_base.lm.get("actions.play.path.button"))
         self.main_box.append(self.config_button)
         self.config_button.connect("clicked", self.on_config)
 
         self.dialog = Gtk.FileDialog.new()
-        self.dialog.set_title("Choose a sound file")
+        self.dialog.set_title(action.plugin_base.lm.get("actions.play.path.dialog.title"))
     
     def on_config(self, button):
         self.dialog.open(callback=lambda source_object, res: self.on_path_choosen(res))
@@ -99,5 +99,5 @@ class PathRow(Adw.PreferencesRow):
             self.label.set_label(path)
             self.action.on_sound_path_changed(path)
         except GLib.Error as e:
-            log.warning(f"Failed to open. Error: {e}")
+            log.warning("Failed to open. Error: {e}")
 

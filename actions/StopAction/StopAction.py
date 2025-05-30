@@ -13,7 +13,7 @@ class StopAction(ActionCore):
 
         self.add_event_assigner(EventAssigner(
             id="stop",
-            ui_label="Stop",
+            ui_label=self.plugin_base.lm.get("actions.stop.label"),
             default_events=[Input.Key.Events.DOWN],
             callback=lambda data : self.on_key_down()
         ))

@@ -1,0 +1,15 @@
+{
+    "plugin.name": "Soundboard",
+    
+    "actions.play.title":               "Play sound",
+    "actions.play.label":               "Play",
+    "actions.play.volume.title":        "Volume",
+    "actions.play.path.label":          "Path to sound file...",
+    "actions.play.path.button":         "Browse",
+    "actions.play.path.dialog.title":   "Choose a sound file",
+    
+    "actions.stop.title": "Stop sound",
+    "actions.stop.label": "Stop",
+
+    "setting.device": "Playback device"
+}
