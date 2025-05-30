@@ -90,7 +90,7 @@ class PathRow(Adw.PreferencesRow):
 
         self.dialog = Gtk.FileDialog.new()
         self.dialog.set_title(action.plugin_base.lm.get("actions.play.path.dialog.title"))
-        if self.action.sound_path is not "":
+        if self.action.sound_path:
             self.dialog.set_initial_file(Gio.File.new_for_path(self.action.sound_path))
     
     def on_config(self, button):
