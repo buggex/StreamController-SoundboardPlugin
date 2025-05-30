@@ -25,7 +25,7 @@ class PlayAction(ActionCore):
         self.add_event_assigner(EventAssigner(
             id="play",
             ui_label=self.plugin_base.lm.get("actions.play.label"),
-            default_events=[Input.Key.Events.DOWN],
+            default_event=Input.Key.Events.DOWN,
             callback=lambda data : self.on_key_down()
         ))
 
