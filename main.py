@@ -23,6 +23,8 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
+from loguru import logger as log
+
 class Soundboard(PluginBase):
     def __init__(self):
         super().__init__()
@@ -43,6 +45,14 @@ class Soundboard(PluginBase):
         selected_device = settings.get(Consts.SETTING_DEVICE)
         if selected_device is not None:
             self.backend.set_device(selected_device)
+        else:
+            # Assume this is first time, set the first device found
+            devices = get_devices(DeviceFilter.SINK)
+            if len(devices) > 0:
+                settings[Consts.SETTING_DEVICE] = devices[0]
+                self.set_settings(settings)
+            else:
+                log.error("Failed to find a sound device!")
 
         ## Register actions
         self.play_action_holder = ActionHolder(
