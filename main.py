@@ -17,9 +17,6 @@ from .actions.StopAction.StopAction import StopAction
 from .helpers.PulseHelpers import get_devices, DeviceFilter
 from .helpers import Consts
 
-# Backend
-from .backend.backend import SoundboardBackend
-
 # Import gtk modules
 import gi
 gi.require_version("Gtk", "4.0")
@@ -33,7 +30,13 @@ class Soundboard(PluginBase):
         self.lm = self.locale_manager
 
         # Launch backend
-        self.backend = SoundboardBackend()
+        backend_path = Path(__file__).parent / "backend" / "backend.py"
+        venv_path = Path(__file__).parent / ".venv"
+
+        self.launch_backend(
+            backend_path=backend_path, open_in_terminal=False, venv_path=venv_path
+        )
+        self.wait_for_backend(tries=5)
 
         # Setup backend
         settings = self.get_settings()

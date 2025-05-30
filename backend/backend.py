@@ -1,8 +1,11 @@
+from streamcontroller_plugin_tools import BackendBase
+from pathlib import Path
+
 import pygame
 
-class SoundboardBackend:
-    def __init__(self):
-        pass
+class SoundboardBackend(BackendBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def set_device(self, device):
         pygame.mixer.quit()
@@ -15,3 +18,5 @@ class SoundboardBackend:
 
     def stop_sound(self):
         pygame.mixer.music.stop()
+
+backend = SoundboardBackend()
