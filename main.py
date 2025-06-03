@@ -80,6 +80,7 @@ class Soundboard(PluginBase):
         )
 
     def get_settings_area(self):
+        # Device
         self.device_model = Gtk.StringList().new(get_devices(DeviceFilter.SINK))
         self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
 
@@ -92,9 +93,14 @@ class Soundboard(PluginBase):
                 self.device_dropdown.set_selected(index)
 
         self.device_dropdown.connect("notify::selected", self.on_device_dropdown_changed)
+
+        # Player
+        player_model = { "Pygame", "libVLC" }
+        self.player_dropdown = Adw.ComboRow(model=player_model, title=self.lm.get("setting.player"))
         
         group = Adw.PreferencesGroup()
         group.add(self.device_dropdown)
+        group.add(self.player_dropdown)
         return group
     
     def on_device_dropdown_changed(self, combo, data):

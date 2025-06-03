@@ -1,56 +1,42 @@
 from streamcontroller_plugin_tools import BackendBase
 
-import vlc
-import time
+from com_buggex_sc_soundboard.backend import PlayerInterface, PlayerPygame, PlayerVLC
+from com_buggex_sc_soundboard.helpers import Consts
+from com_buggex_sc_soundboard.helpers.Consts import Players
 
 from loguru import logger as log
 
-PLAY_WAIT_TIME_SECONDS = 0.05
-MAX_PLAY_WAIT_TRIES = int(1 / PLAY_WAIT_TIME_SECONDS)
-
 class SoundboardBackend(BackendBase):
+    player : PlayerInterface
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.device = ""
-        self.instance = vlc.Instance()
         self.player = None
+
+    def set_player(self, playerType):
+        match playerType:
+            case Players.Pygame:
+                self.player = PlayerPygame()
+            case Players.libVLC:
+                self.player = PlayerVLC()
+            case _:
+                log.error(f"Unknown playerType {playerType}")
+
+        if self.player is not None:
+            self.player.set_device(self.device)
 
     def set_device(self, device):
         self.device = device
+        if self.player is not None:
+            self.player.set_device(device)
 
-    def play_sound(self, path_to_sound, volume=100):
-        # Stop old
-        self.stop_sound()
-
-        # Start new
-        media = self.instance.media_new("file://" + path_to_sound)
-        self.player = media.player_new_from_media()
-        self.player.audio_output_device_set(None, self.find_device(self.player, self.device))
-        r = self.player.play()
-        if r == 0:
-            # We need for playback to begin before we can set volume
-            # TODO: Need to find a better solution
-            tries = 0
-            while self.player.is_playing() is 0 and tries < MAX_PLAY_WAIT_TRIES:
-                time.sleep(PLAY_WAIT_TIME_SECONDS)
-                tries += 1
-            self.player.audio_set_volume(int(volume))
-        else:
-            log.error(f"Failed to play. File: {path_to_sound}")
+    def play_sound(self, path_to_sound, volume):
+        if self.player is not None:
+            self.player.play_sound(path_to_sound, volume)
 
     def stop_sound(self):
-        if self.player:
-            self.player.release()
-
-    def find_device(self, player, device_name):
-        devices = player.audio_output_device_enum()
-        if devices:
-            device = devices
-            while device:
-                device = device.contents
-                if device_name in str(device.description):
-                    return device.device
-                device = device.next
-        return None
+        if self.player is not None:
+            self.player.stop_sound()
 
 backend = SoundboardBackend()

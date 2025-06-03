@@ -11,5 +11,6 @@
     "actions.stop.title": "Stop sound",
     "actions.stop.label": "Stop",
 
-    "setting.device": "Playback device"
+    "setting.device": "Playback device",
+    "setting.player": "Player"
 }
