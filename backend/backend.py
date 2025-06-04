@@ -1,27 +1,30 @@
-from streamcontroller_plugin_tools import BackendBase
+from com_buggex_sc_soundboard.backend.player_interface import PlayerInterface
+from com_buggex_sc_soundboard.backend.player_pygame import PlayerPygame
+from com_buggex_sc_soundboard.backend.player_vlc import PlayerVLC
 
-from com_buggex_sc_soundboard.backend import PlayerInterface, PlayerPygame, PlayerVLC
 from com_buggex_sc_soundboard.helpers import Consts
 from com_buggex_sc_soundboard.helpers.Consts import Players
 
 from loguru import logger as log
 
-class SoundboardBackend(BackendBase):
+class SoundboardBackend():
     player : PlayerInterface
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self.device = ""
         self.player = None
 
     def set_player(self, playerType):
-        match playerType:
+        player = Consts.PLAYER_NAMES[playerType]
+        log.debug(f"new player: {playerType}")
+        match player:
             case Players.Pygame:
                 self.player = PlayerPygame()
             case Players.libVLC:
                 self.player = PlayerVLC()
             case _:
-                log.error(f"Unknown playerType {playerType}")
+                log.error(f"Unknown playerType {playerType} {player}")
 
         if self.player is not None:
             self.player.set_device(self.device)
@@ -38,5 +41,3 @@ class SoundboardBackend(BackendBase):
     def stop_sound(self):
         if self.player is not None:
             self.player.stop_sound()
-
-backend = SoundboardBackend()

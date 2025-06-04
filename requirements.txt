@@ -1,4 +1,5 @@
 loguru
+pulsectl
 python-vlc
 pygame
 streamcontroller_plugin_tools

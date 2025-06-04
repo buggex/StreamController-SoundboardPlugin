@@ -1,6 +1,4 @@
 {
-    "plugin.name": "Soundboard",
-    
     "actions.play.title":               "Play sound",
     "actions.play.label":               "Play",
     "actions.play.volume.title":        "Volume",
@@ -12,5 +10,7 @@
     "actions.stop.label": "Stop",
 
     "setting.device": "Playback device",
-    "setting.player": "Player"
+    "setting.player": "Player",
+    "setting.player.note": "libVLC is better quality, but does not work for Flatpak installs"
+    
 }

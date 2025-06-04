@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any
 
+# Add plugin to sys.paths
 ABSOLUTE_PLUGIN_PATH = str(Path(__file__).parent.parent.absolute())
 sys.path.insert(0, ABSOLUTE_PLUGIN_PATH)
 
@@ -10,12 +11,14 @@ from src.backend.PluginManager.PluginBase import PluginBase
 from src.backend.PluginManager.ActionHolder import ActionHolder
 
 # Import actions
-from .actions.PlayAction.PlayAction import PlayAction
-from .actions.StopAction.StopAction import StopAction
+from com_buggex_sc_soundboard.actions.playaction.playaction import PlayAction
+from com_buggex_sc_soundboard.actions.stopaction.stopaction import StopAction
 
 # Helpers
-from .helpers.PulseHelpers import get_devices, DeviceFilter
-from .helpers import Consts
+from com_buggex_sc_soundboard.helpers import Devices
+from com_buggex_sc_soundboard.helpers import Consts
+
+from com_buggex_sc_soundboard.backend.backend import SoundboardBackend
 
 # Import gtk modules
 import gi
@@ -31,28 +34,27 @@ class Soundboard(PluginBase):
         
         self.lm = self.locale_manager
 
-        # Launch backend
-        backend_path = Path(__file__).parent / "backend" / "backend.py"
-        venv_path = Path(__file__).parent / ".venv"
-
-        self.launch_backend(
-            backend_path=backend_path, open_in_terminal=False, venv_path=venv_path
-        )
-        self.wait_for_backend(tries=5)
+        # Start backend
+        self.backend = SoundboardBackend()
 
         # Setup backend
         settings = self.get_settings()
+
         selected_device = settings.get(Consts.SETTING_DEVICE)
         if selected_device is not None:
             self.backend.set_device(selected_device)
         else:
             # Assume this is first time, set the first device found
-            devices = get_devices(DeviceFilter.SINK)
+            devices = Devices.GetAudioDevices()
             if len(devices) > 0:
                 settings[Consts.SETTING_DEVICE] = devices[0]
                 self.set_settings(settings)
             else:
                 log.error("Failed to find a sound device!")
+
+        selected_player = settings.get(Consts.SETTING_PLAYER)
+        if selected_player is not None:
+            self.backend.set_player(selected_player)
 
         ## Register actions
         self.play_action_holder = ActionHolder(
@@ -72,21 +74,16 @@ class Soundboard(PluginBase):
         self.add_action_holder(self.stop_action_holder)
 
         # Register plugin
-        self.register(
-            plugin_name = self.lm.get("plugin.name"),
-            github_repo = "https://github.com/buggex/sc_soundboard",
-            plugin_version = "1.0.0",
-            app_version = "1.5.0-beta"
-        )
+        self.register()
 
     def get_settings_area(self):
-        # Device
-        self.device_model = Gtk.StringList().new(get_devices(DeviceFilter.SINK))
-        self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
-
         settings = self.get_settings()
-        selected_device = settings.get(Consts.SETTING_DEVICE)
 
+        # Device
+        self.device_model = Gtk.StringList().new(Devices.GetAudioDevices())
+        self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
+        
+        selected_device = settings.get(Consts.SETTING_DEVICE)
         if selected_device is not None:
             index = self.device_model.find(selected_device)
             if index < self.device_model.get_n_items():
@@ -95,12 +92,22 @@ class Soundboard(PluginBase):
         self.device_dropdown.connect("notify::selected", self.on_device_dropdown_changed)
 
         # Player
-        player_model = { "Pygame", "libVLC" }
-        self.player_dropdown = Adw.ComboRow(model=player_model, title=self.lm.get("setting.player"))
+        player_model = Gtk.StringList().new(list(Consts.PLAYER_NAMES.keys()))
+        self.player_dropdown = Adw.ComboRow(model=player_model, title=self.lm.get("setting.player") + "*")
+
+        selected_player = settings.get(Consts.SETTING_PLAYER)
+        if selected_player is not None:
+            index = player_model.find(selected_player)
+            self.player_dropdown.set_selected(index)
+
+        self.player_dropdown.connect("notify::selected", self.on_player_dropdown_changed)
+
+        self.loading_label = Gtk.Label(label="*" + self.lm.get("setting.player.note"))
         
         group = Adw.PreferencesGroup()
         group.add(self.device_dropdown)
         group.add(self.player_dropdown)
+        group.add(self.loading_label)
         return group
     
     def on_device_dropdown_changed(self, combo, data):
@@ -112,3 +119,13 @@ class Soundboard(PluginBase):
 
         if selected_device is not None:
             self.backend.set_device(selected_device)
+
+    def on_player_dropdown_changed(self, combo, data):
+        selected_player = combo.get_selected_item().get_string()
+
+        settings = self.get_settings()
+        settings[Consts.SETTING_PLAYER] = selected_player
+        self.set_settings(settings)
+
+        if selected_player is not None:
+            self.backend.set_player(selected_player)

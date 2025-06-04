@@ -1,4 +1,4 @@
-from com_buggex_sc_soundboard.backend import PlayerInterface
+from com_buggex_sc_soundboard.backend.player_interface import PlayerInterface
 
 import pygame
 
@@ -10,12 +10,15 @@ class PlayerPygame(PlayerInterface):
         self.device = ""
 
     def __del__(self):
-        print("PlayerPygame Del")
+        pygame.mixer.quit()
 
     def set_device(self, device):
+        log.debug(f"new device: {device}")
+        pygame.mixer.quit()
         self.device = device
 
     def play_sound(self, path_to_sound, volume):
+        log.debug(f"Play file: {path_to_sound} at {volume}")
         pygame.mixer.quit()
         pygame.mixer.init(devicename=self.device)
     
