@@ -12,5 +12,12 @@
         "license": "Apache-2.0",
         "license-url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         "description": ""
+    },
+    "assets/Thumbnail.png": {
+        "copyright": "Google",
+        "original-url": "https://github.com/google/material-design-icons",
+        "license": "Apache-2.0",
+        "license-url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+        "description": "Thumbnail partial made with google fonts."
     }
 }
