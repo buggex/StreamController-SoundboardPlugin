@@ -1,4 +1,5 @@
 import sys
+import os
 from pathlib import Path
 from typing import Dict, Any
 
@@ -18,7 +19,7 @@ from com_buggex_sc_soundboard.actions.stopaction.stopaction import StopAction
 from com_buggex_sc_soundboard.helpers import Devices
 from com_buggex_sc_soundboard.helpers import Consts
 
-from com_buggex_sc_soundboard.backend.backend import SoundboardBackend
+#from com_buggex_sc_soundboard.backend.backend import SoundboardBackend
 
 # Import gtk modules
 import gi
@@ -37,8 +38,9 @@ class Soundboard(PluginBase):
         # Start backend
         backend_path = os.path.join(self.PATH, 'backend/backend.py')
         self.launch_backend(backend_path=backend_path,
-                            open_in_terminal=False, venv_path=os.path.join(self.PATH, '.venv'))
-        self.backend = SoundboardBackend()
+                            open_in_terminal=False,
+                            venv_path=os.path.join(self.PATH, '.venv'))
+        self.wait_for_backend(tries=5)
 
         # Setup backend
         settings = self.get_settings()
