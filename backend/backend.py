@@ -47,7 +47,7 @@ class SoundboardBackend(BackendBase):
         if self.player is not None:
             self.player.stop_sound()
 
-    def GetAudioDevices():
+    def GetAudioDevices(self):
         if not pygame.mixer.get_init():
             pygame.mixer.init()
         return sdl2_audio.get_audio_device_names(False)
