@@ -4,7 +4,7 @@ from src.backend.DeckManagement.InputIdentifier import Input
 from src.backend.PluginManager.InputBases import ActionCore
 
 # Helpers
-from com_buggex_sc_soundboard.helpers import Consts
+from com_buggex_soundboard.helpers import Consts
 
 # Import gtk modules - used for the config rows
 import gi

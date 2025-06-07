@@ -1,6 +1,6 @@
 from enum import Enum
 
-ID = "com_buggex_sc_soundboard"
+ID = "com_buggex_soundboard"
 
 SETTING_DEVICE = "selected_device"
 SETTING_PLAYER = "selected_player"

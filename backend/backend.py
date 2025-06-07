@@ -1,11 +1,11 @@
 from streamcontroller_plugin_tools import BackendBase
 
-from com_buggex_sc_soundboard.backend.player_interface import PlayerInterface
-from com_buggex_sc_soundboard.backend.player_pygame import PlayerPygame
-from com_buggex_sc_soundboard.backend.player_vlc import PlayerVLC
+from com_buggex_soundboard.backend.player_interface import PlayerInterface
+from com_buggex_soundboard.backend.player_pygame import PlayerPygame
+from com_buggex_soundboard.backend.player_vlc import PlayerVLC
 
-from com_buggex_sc_soundboard.helpers import Consts
-from com_buggex_sc_soundboard.helpers.Consts import Players
+from com_buggex_soundboard.helpers import Consts
+from com_buggex_soundboard.helpers.Consts import Players
 
 from loguru import logger as log
 

@@ -1,4 +1,4 @@
-from com_buggex_sc_soundboard.backend.player_interface import PlayerInterface
+from com_buggex_soundboard.backend.player_interface import PlayerInterface
 
 import vlc
 import time

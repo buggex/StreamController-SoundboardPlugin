@@ -12,14 +12,12 @@ from src.backend.PluginManager.PluginBase import PluginBase
 from src.backend.PluginManager.ActionHolder import ActionHolder
 
 # Import actions
-from com_buggex_sc_soundboard.actions.playaction.playaction import PlayAction
-from com_buggex_sc_soundboard.actions.stopaction.stopaction import StopAction
+from com_buggex_soundboard.actions.playaction.playaction import PlayAction
+from com_buggex_soundboard.actions.stopaction.stopaction import StopAction
 
 # Helpers
-from com_buggex_sc_soundboard.helpers import Devices
-from com_buggex_sc_soundboard.helpers import Consts
-
-#from com_buggex_sc_soundboard.backend.backend import SoundboardBackend
+from com_buggex_soundboard.helpers import Devices
+from com_buggex_soundboard.helpers import Consts
 
 # Import gtk modules
 import gi
