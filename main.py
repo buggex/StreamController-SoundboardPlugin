@@ -34,10 +34,11 @@ class Soundboard(PluginBase):
         self.lm = self.locale_manager
 
         # Start backend
-        backend_path = os.path.join(self.PATH, 'backend/backend.py')
-        self.launch_backend(backend_path=backend_path,
-                            open_in_terminal=False,
-                            venv_path=os.path.join(self.PATH, '.venv'))
+        self.launch_backend(
+            os.path.join(self.PATH, "backend", "backend.py"),
+            os.path.join(self.PATH, "backend", ".venv"),
+            open_in_terminal=False,
+        )
         self.wait_for_backend(tries=5)
 
         # Setup backend
