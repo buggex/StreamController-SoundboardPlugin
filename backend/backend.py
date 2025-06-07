@@ -9,6 +9,9 @@ from com_buggex_soundboard.helpers.Consts import Players
 
 from loguru import logger as log
 
+import pygame
+import pygame._sdl2.audio as sdl2_audio
+
 class SoundboardBackend(BackendBase):
     player : PlayerInterface
 
@@ -43,5 +46,10 @@ class SoundboardBackend(BackendBase):
     def stop_sound(self):
         if self.player is not None:
             self.player.stop_sound()
+
+    def GetAudioDevices():
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        return sdl2_audio.get_audio_device_names(False)
 
 backend = SoundboardBackend()

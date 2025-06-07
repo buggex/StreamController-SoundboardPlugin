@@ -16,7 +16,6 @@ from com_buggex_soundboard.actions.playaction.playaction import PlayAction
 from com_buggex_soundboard.actions.stopaction.stopaction import StopAction
 
 # Helpers
-from com_buggex_soundboard.helpers import Devices
 from com_buggex_soundboard.helpers import Consts
 
 # Import gtk modules
@@ -49,7 +48,7 @@ class Soundboard(PluginBase):
             self.backend.set_device(selected_device)
         else:
             # Assume this is first time, set the first device found
-            devices = Devices.GetAudioDevices()
+            devices = self.backend.GetAudioDevices()
             if len(devices) > 0:
                 settings[Consts.SETTING_DEVICE] = devices[0]
                 self.set_settings(settings)
@@ -84,7 +83,7 @@ class Soundboard(PluginBase):
         settings = self.get_settings()
 
         # Device
-        self.device_model = Gtk.StringList().new(Devices.GetAudioDevices())
+        self.device_model = Gtk.StringList().new(devices = self.backend.GetAudioDevices())
         self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
         
         selected_device = settings.get(Consts.SETTING_DEVICE)
