@@ -48,7 +48,7 @@ class Soundboard(PluginBase):
             self.backend.set_device(selected_device)
         else:
             # Assume this is first time, set the first device found
-            devices = self.backend.GetAudioDevices()
+            devices = self.backend.get_audio_devices()
             if len(devices) > 0:
                 settings[Consts.SETTING_DEVICE] = devices[0]
                 self.set_settings(settings)
@@ -83,7 +83,7 @@ class Soundboard(PluginBase):
         settings = self.get_settings()
 
         # Device
-        self.device_model = Gtk.StringList().new(devices = self.backend.GetAudioDevices())
+        self.device_model = Gtk.StringList().new(self.backend.get_audio_devices())
         self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
         
         selected_device = settings.get(Consts.SETTING_DEVICE)

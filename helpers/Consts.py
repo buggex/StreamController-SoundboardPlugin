@@ -12,7 +12,6 @@ class Players(Enum):
     Pygame = 0
     libVLC = 1
 
-
 PLAYER_NAMES = {
   "Pygame": Players.Pygame,
   "libVLC": Players.libVLC
