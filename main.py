@@ -50,9 +50,10 @@ class Soundboard(PluginBase):
             # Assume this is first time, set the first device found
             devices = self.backend.get_audio_devices()
             if len(devices) > 0:
-                settings[Consts.SETTING_DEVICE] = devices[0]
+                device = devices[0]
+                settings[Consts.SETTING_DEVICE] = device
                 self.set_settings(settings)
-                self.backend.set_device(devices)
+                self.backend.set_device(device)
             else:
                 log.error("Failed to find a sound device!")
 
