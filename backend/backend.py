@@ -1,56 +1,61 @@
 from streamcontroller_plugin_tools import BackendBase
 
-import vlc
-import time
+from player_interface import PlayerInterface
+from player_pygame import PlayerPygame
+from player_vlc import PlayerVLC
 
 from loguru import logger as log
 
-PLAY_WAIT_TIME_SECONDS = 0.05
-MAX_PLAY_WAIT_TRIES = int(1 / PLAY_WAIT_TIME_SECONDS)
+import pygame
+import pygame._sdl2.audio as sdl2_audio
+
+# To get access to plugin files
+import sys
+from pathlib import Path
+ABSOLUTE_PLUGIN_PATH = str(Path(__file__).parent.parent.absolute())
+sys.path.insert(0, ABSOLUTE_PLUGIN_PATH)
+
+from helpers import Consts
+from helpers.Consts import Players
 
 class SoundboardBackend(BackendBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    player : PlayerInterface
+
+    def __init__(self):
+        super().__init__()
         self.device = ""
-        self.instance = vlc.Instance()
         self.player = None
+
+    def set_player(self, playerType):
+        player = Consts.PLAYER_NAMES[playerType]
+        log.debug(f"new player: {playerType}")
+        match player:
+            case Players.Pygame:
+                self.player = PlayerPygame()
+            case Players.libVLC:
+                self.player = PlayerVLC()
+            case _:
+                log.error(f"Unknown playerType {playerType} {player}")
+
+        if self.player is not None:
+            self.player.set_device(self.device)
 
     def set_device(self, device):
         self.device = device
+        if self.player is not None:
+            self.player.set_device(device)
 
-    def play_sound(self, path_to_sound, volume=100):
-        # Stop old
-        self.stop_sound()
-
-        # Start new
-        media = self.instance.media_new("file://" + path_to_sound)
-        self.player = media.player_new_from_media()
-        self.player.audio_output_device_set(None, self.find_device(self.player, self.device))
-        r = self.player.play()
-        if r == 0:
-            # We need for playback to begin before we can set volume
-            # TODO: Need to find a better solution
-            tries = 0
-            while self.player.is_playing() is 0 and tries < MAX_PLAY_WAIT_TRIES:
-                time.sleep(PLAY_WAIT_TIME_SECONDS)
-                tries += 1
-            self.player.audio_set_volume(int(volume))
-        else:
-            log.error(f"Failed to play. File: {path_to_sound}")
+    def play_sound(self, path_to_sound, volume):
+        if self.player is not None:
+            self.player.play_sound(path_to_sound, volume)
 
     def stop_sound(self):
-        if self.player:
-            self.player.release()
+        if self.player is not None:
+            self.player.stop_sound()
 
-    def find_device(self, player, device_name):
-        devices = player.audio_output_device_enum()
-        if devices:
-            device = devices
-            while device:
-                device = device.contents
-                if device_name in str(device.description):
-                    return device.device
-                device = device.next
-        return None
+    def get_audio_devices(self):
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        return sdl2_audio.get_audio_device_names(False)
 
 backend = SoundboardBackend()

@@ -1,3 +1,4 @@
 loguru
 python-vlc
+pygame
 streamcontroller_plugin_tools

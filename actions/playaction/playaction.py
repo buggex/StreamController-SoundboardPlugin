@@ -4,7 +4,7 @@ from src.backend.DeckManagement.InputIdentifier import Input
 from src.backend.PluginManager.InputBases import ActionCore
 
 # Helpers
-from com_buggex_sc_soundboard.helpers import Consts
+from com_buggex_soundboard.helpers import Consts
 
 # Import gtk modules - used for the config rows
 import gi
@@ -33,7 +33,8 @@ class PlayAction(ActionCore):
         self.load_config_values()
 
         self.ui_sound_path = PathRow(self)
-        self.ui_sound_path.label.set_label(self.sound_path)
+        if self.sound_path:
+            self.ui_sound_path.label.set_label(self.sound_path)
 
         self.ui_volume = Adw.SpinRow.new_with_range(min=0, max=100, step=1)
         self.ui_volume.set_title(self.plugin_base.lm.get("actions.play.volume.title"))
