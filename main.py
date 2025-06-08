@@ -52,12 +52,19 @@ class Soundboard(PluginBase):
             if len(devices) > 0:
                 settings[Consts.SETTING_DEVICE] = devices[0]
                 self.set_settings(settings)
+                self.backend.set_device(devices)
             else:
                 log.error("Failed to find a sound device!")
 
         selected_player = settings.get(Consts.SETTING_PLAYER)
         if selected_player is not None:
             self.backend.set_player(selected_player)
+        else:
+            # Assume this is first time, set the default player
+            default_player = list(Consts.PLAYER_NAMES.keys())[0]
+            settings[Consts.SETTING_PLAYER] = default_player
+            self.set_settings(settings)
+            self.backend.set_player(default_player)
 
         ## Register actions
         self.play_action_holder = ActionHolder(
