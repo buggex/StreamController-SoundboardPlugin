@@ -10,6 +10,8 @@ sys.path.insert(0, ABSOLUTE_PLUGIN_PATH)
 # Import StreamController modules
 from src.backend.PluginManager.PluginBase import PluginBase
 from src.backend.PluginManager.ActionHolder import ActionHolder
+from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
+from src.backend.DeckManagement.InputIdentifier import Input
 
 # Import actions
 from com_buggex_soundboard.actions.playaction.playaction import PlayAction
@@ -73,6 +75,11 @@ class Soundboard(PluginBase):
             action_base = PlayAction,
             action_id = Consts.ID + "::PlayAction",
             action_name = self.lm.get("actions.play.title"),
+            action_support = {
+                Input.Key: ActionInputSupport.SUPPORTED,
+                Input.Dial: ActionInputSupport.UNTESTED,
+                Input.Touchscreen: ActionInputSupport.UNTESTED
+            },
         )
         self.add_action_holder(self.play_action_holder)
 
@@ -81,6 +88,11 @@ class Soundboard(PluginBase):
             action_base = StopAction,
             action_id = Consts.ID + "::StopAction",
             action_name = self.lm.get("actions.stop.title"),
+            action_support = {
+                Input.Key: ActionInputSupport.SUPPORTED,
+                Input.Dial: ActionInputSupport.UNTESTED,
+                Input.Touchscreen: ActionInputSupport.UNTESTED
+            },
         )
         self.add_action_holder(self.stop_action_holder)
 

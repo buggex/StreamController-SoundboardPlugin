@@ -4,6 +4,8 @@ import pygame
 
 from loguru import logger as log
 
+# https://www.pygame.org/docs/ref/mixer.html#pygame.mixer.Channel
+
 class PlayerPygame(PlayerInterface):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -5,6 +5,10 @@
     "actions.play.path.label":          "Path to sound file...",
     "actions.play.path.button":         "Browse",
     "actions.play.path.dialog.title":   "Choose a sound file",
+    "actions.play.if_playing.title":    "Choose what to do if already playing",
+    "actions.play.if_playing.restart":  "Restart",
+    "actions.play.if_playing.stop":     "Stop",
+    "actions.play.if_playing.ontop":    "Play on top",
     
     "actions.stop.title": "Stop sound",
     "actions.stop.label": "Stop",

@@ -18,6 +18,7 @@ class PlayAction(ActionCore):
 
     sound_path      : str = ""
     sound_volume    : int = 100
+    if_playing      : Consts.BehaviorIfPlaying = Consts.BehaviorIfPlaying.Restart
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,7 +42,14 @@ class PlayAction(ActionCore):
         self.ui_volume.set_value(self.sound_volume)
         self.ui_volume.connect("notify::value", self.on_sound_volume_changed)
 
-        return [self.ui_sound_path, self.ui_volume]
+        if_playing_model = Gtk.StringList().new()
+        for behavior in Consts.BehaviorIfPlayingNames.values():
+            if_playing_model.append(self.plugin_base.lm.get(behavior))
+        self.ui_if_playing = Adw.ComboRow(model=if_playing_model, title=self.plugin_base.lm.get("actions.play.if_playing.title"))
+        self.ui_if_playing.set_selected(self.if_playing.value)
+        self.ui_if_playing.connect("notify::selected", self.on_sound_if_playing_changed)
+
+        return [self.ui_sound_path, self.ui_volume, self.ui_if_playing]
     
     def on_sound_path_changed(self, path):
         self.sound_path = path
@@ -55,6 +63,12 @@ class PlayAction(ActionCore):
         settings[Consts.SETTING_SOUND_VOLUME] = self.sound_volume
         self.set_settings(settings)
 
+    def on_sound_if_playing_changed(self, control, param):
+        self.if_playing = self.ui_if_playing.get_selected()
+        settings = self.get_settings()
+        settings[Consts.SETTING_SOUND_IF_PLAYING] = self.if_playing
+        self.set_settings(settings)
+
     def load_config_values(self):
         settings = self.get_settings()
         
@@ -65,6 +79,10 @@ class PlayAction(ActionCore):
         volume = settings.get(Consts.SETTING_SOUND_VOLUME)
         if volume is not None:
             self.sound_volume = volume
+
+        if_playing = settings.get(Consts.SETTING_SOUND_IF_PLAYING)
+        if if_playing is not None:
+            self.if_playing = if_playing
 
     def on_key_down(self):
         self.plugin_base.backend.play_sound(self.sound_path, self.sound_volume)
