@@ -58,3 +58,15 @@ class PlayerVLC(PlayerInterface):
                     return device.device
                 device = device.next
         return None
+    
+    def get_audio_devices():
+        media_player = vlc.MediaPlayer()
+        devices = media_player.audio_output_device_enum()
+        devices_list = []
+        if devices:
+            device = devices
+            while device:
+                device = device.contents
+                devices_list.append(device.description.decode("utf-8"))
+                device = device.next
+        return devices_list

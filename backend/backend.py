@@ -6,9 +6,6 @@ from player_vlc import PlayerVLC
 
 from loguru import logger as log
 
-import pygame
-import pygame._sdl2.audio as sdl2_audio
-
 # To get access to plugin files
 import sys
 from pathlib import Path
@@ -54,8 +51,20 @@ class SoundboardBackend(BackendBase):
             self.player.stop_sound()
 
     def get_audio_devices(self):
-        if not pygame.mixer.get_init():
-            pygame.mixer.init()
-        return sdl2_audio.get_audio_device_names(False)
+        devices = []
+        try:
+            devices = PlayerPygame.get_audio_devices()
+        except:
+            pass
+        
+        if(len(devices) > 0):
+            return devices
+        
+        try:
+            devices = PlayerVLC.get_audio_devices()
+        except:
+            pass    
+
+        return devices
 
 backend = SoundboardBackend()

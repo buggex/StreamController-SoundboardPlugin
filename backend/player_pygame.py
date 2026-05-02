@@ -1,6 +1,7 @@
 from player_interface import PlayerInterface
 
 import pygame
+import pygame._sdl2.audio as sdl2_audio
 
 from loguru import logger as log
 
@@ -28,3 +29,8 @@ class PlayerPygame(PlayerInterface):
 
     def stop_sound(self):
         pygame.mixer.music.stop()
+
+    def get_audio_devices():
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        return sdl2_audio.get_audio_device_names(False)
