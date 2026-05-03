@@ -43,6 +43,18 @@ class Soundboard(PluginBase):
         # Setup backend
         settings = self.get_settings()
 
+        selected_player = settings.get(Consts.SETTING_PLAYER)
+        if selected_player is not None:
+            self.backend.set_player(selected_player)
+        else:
+            # Assume this is first time, set the default player
+            default_player = list(Consts.PLAYER_NAMES.keys())[0]
+            settings[Consts.SETTING_PLAYER] = default_player
+            self.set_settings(settings)
+            log.debug(f"Setting default player to {default_player}")
+            self.backend.set_player(default_player)
+            log.debug(f"Default player set to {default_player}")
+
         selected_device = settings.get(Consts.SETTING_DEVICE)
         if selected_device is not None:
             self.backend.set_device(selected_device)
@@ -56,16 +68,6 @@ class Soundboard(PluginBase):
                 self.backend.set_device(device)
             else:
                 log.error("Failed to find a sound device!")
-
-        selected_player = settings.get(Consts.SETTING_PLAYER)
-        if selected_player is not None:
-            self.backend.set_player(selected_player)
-        else:
-            # Assume this is first time, set the default player
-            default_player = list(Consts.PLAYER_NAMES.keys())[0]
-            settings[Consts.SETTING_PLAYER] = default_player
-            self.set_settings(settings)
-            self.backend.set_player(default_player)
 
         ## Register actions
         self.play_action_holder = ActionHolder(
@@ -89,18 +91,7 @@ class Soundboard(PluginBase):
 
     def get_settings_area(self):
         settings = self.get_settings()
-
-        # Device
-        self.device_model = Gtk.StringList().new(self.backend.get_audio_devices())
-        self.device_dropdown = Adw.ComboRow(model=self.device_model, title=self.lm.get("setting.device"))
-        
-        selected_device = settings.get(Consts.SETTING_DEVICE)
-        if selected_device is not None:
-            index = self.device_model.find(selected_device)
-            if index < self.device_model.get_n_items():
-                self.device_dropdown.set_selected(index)
-
-        self.device_dropdown.connect("notify::selected", self.on_device_dropdown_changed)
+        self.settings_loading = True
 
         # Player
         player_model = Gtk.StringList().new(list(Consts.PLAYER_NAMES.keys()))
@@ -113,30 +104,62 @@ class Soundboard(PluginBase):
 
         self.player_dropdown.connect("notify::selected", self.on_player_dropdown_changed)
 
+        # Device
+        self.device_dropdown = Adw.ComboRow(title=self.lm.get("setting.device"))
+        self.device_dropdown.connect("notify::selected", self.on_device_dropdown_changed)
+        self.update_devices()
+
         self.loading_label = Gtk.Label(label="*" + self.lm.get("setting.player.note"))
+
+        self.settings_loading = False
         
         group = Adw.PreferencesGroup()
-        group.add(self.device_dropdown)
         group.add(self.player_dropdown)
+        group.add(self.device_dropdown)
         group.add(self.loading_label)
         return group
     
     def on_device_dropdown_changed(self, combo, data):
+        if combo.get_selected_item() is None:
+            return
+        
         selected_device = combo.get_selected_item().get_string()
 
         settings = self.get_settings()
         settings[Consts.SETTING_DEVICE] = selected_device
         self.set_settings(settings)
 
+        if self.settings_loading:
+            return
+
         if selected_device is not None:
             self.backend.set_device(selected_device)
 
     def on_player_dropdown_changed(self, combo, data):
+        if combo.get_selected_item() is None:
+            return
+
         selected_player = combo.get_selected_item().get_string()
 
         settings = self.get_settings()
         settings[Consts.SETTING_PLAYER] = selected_player
         self.set_settings(settings)
 
+        if self.settings_loading:
+            return
+
         if selected_player is not None:
             self.backend.set_player(selected_player)
+            self.update_devices()
+
+    def update_devices(self):
+        settings = self.get_settings()
+
+        self.device_model = Gtk.StringList().new(self.backend.get_audio_devices())
+        self.device_dropdown.set_model(self.device_model)
+
+        selected_device = settings.get(Consts.SETTING_DEVICE)
+        if selected_device is not None:
+            index = self.device_model.find(selected_device)
+            if index < self.device_model.get_n_items():
+                self.device_dropdown.set_selected(index)

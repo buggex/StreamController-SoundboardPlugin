@@ -11,8 +11,10 @@ SETTING_SOUND_VOLUME    = "sound_volume"
 class Players(Enum):
     Pygame = 0
     libVLC = 1
+    sounddevice = 2
 
 PLAYER_NAMES = {
   "Pygame": Players.Pygame,
-  "libVLC": Players.libVLC
+  "libVLC": Players.libVLC,
+  "sounddevice": Players.sounddevice,
 }

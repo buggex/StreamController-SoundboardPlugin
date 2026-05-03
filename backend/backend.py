@@ -3,6 +3,7 @@ from streamcontroller_plugin_tools import BackendBase
 from player_interface import PlayerInterface
 from player_pygame import PlayerPygame
 from player_vlc import PlayerVLC
+from player_sounddevice import PlayerSoundDevice
 
 from loguru import logger as log
 
@@ -31,6 +32,8 @@ class SoundboardBackend(BackendBase):
                 self.player = PlayerPygame()
             case Players.libVLC:
                 self.player = PlayerVLC()
+            case Players.sounddevice:
+                self.player = PlayerSoundDevice()
             case _:
                 log.error(f"Unknown playerType {playerType} {player}")
 
@@ -41,6 +44,7 @@ class SoundboardBackend(BackendBase):
         self.device = device
         if self.player is not None:
             self.player.set_device(device)
+            log.debug(f"new device: {device}")
 
     def play_sound(self, path_to_sound, volume):
         if self.player is not None:
@@ -51,20 +55,8 @@ class SoundboardBackend(BackendBase):
             self.player.stop_sound()
 
     def get_audio_devices(self):
-        devices = []
-        try:
-            devices = PlayerPygame.get_audio_devices()
-        except:
-            pass
-        
-        if(len(devices) > 0):
-            return devices
-        
-        try:
-            devices = PlayerVLC.get_audio_devices()
-        except:
-            pass    
-
-        return devices
+        if self.player is not None:
+            return self.player.get_audio_devices()
+        return []
 
 backend = SoundboardBackend()

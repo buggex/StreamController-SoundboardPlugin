@@ -14,3 +14,7 @@ class PlayerInterface(ABC):
     @abstractmethod
     def stop_sound(self):
         pass
+
+    @abstractmethod
+    def get_audio_devices(self):
+        return []

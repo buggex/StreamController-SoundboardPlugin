@@ -11,6 +11,6 @@
 
     "setting.device": "Playback device",
     "setting.player": "Player",
-    "setting.player.note": "libVLC is better quality, but does not work for Flatpak installs"
+    "setting.player.note": "libVLC and sounddevice does not work for Flatpak installs"
     
 }
