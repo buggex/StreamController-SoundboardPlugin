@@ -38,7 +38,8 @@ class SoundboardBackend(BackendBase):
                 case _:
                     log.error(f"Unknown playerType {playerType} {player}")
         except Exception as e:
-                log.error(f"Failed to initilize player {playerType}: {e}")
+            log.error(f"Failed to initilize player {playerType}: {e}")
+            self.player = None
 
         if self.player is not None:
             self.player.set_device(self.device)
