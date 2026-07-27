@@ -9,8 +9,6 @@ class PlayerPygame(PlayerInterface):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.device = ""
-        pygame.init()
-        pygame.mixer.init()
 
     def __del__(self):
         try:
@@ -50,7 +48,9 @@ class PlayerPygame(PlayerInterface):
         try:
             if not pygame.mixer.get_init():
                 pygame.mixer.init()
-            return sdl2_audio.get_audio_device_names(False)
+            devices = sdl2_audio.get_audio_device_names(False)
+            pygame.mixer.quit()
+            return devices
         except Exception as e:
             log.error(f"Failed to get audio devices: {e}")
             return []

@@ -27,15 +27,18 @@ class SoundboardBackend(BackendBase):
     def set_player(self, playerType):
         player = Consts.PLAYER_NAMES[playerType]
         log.debug(f"new player: {playerType}")
-        match player:
-            case Players.Pygame:
-                self.player = PlayerPygame()
-            case Players.libVLC:
-                self.player = PlayerVLC()
-            case Players.sounddevice:
-                self.player = PlayerSoundDevice()
-            case _:
-                log.error(f"Unknown playerType {playerType} {player}")
+        try:
+            match player:
+                case Players.Pygame:
+                    self.player = PlayerPygame()
+                case Players.libVLC:
+                    self.player = PlayerVLC()
+                case Players.sounddevice:
+                    self.player = PlayerSoundDevice()
+                case _:
+                    log.error(f"Unknown playerType {playerType} {player}")
+        except Exception as e:
+                log.error(f"Failed to initilize player {playerType}: {e}")
 
         if self.player is not None:
             self.player.set_device(self.device)
@@ -49,14 +52,19 @@ class SoundboardBackend(BackendBase):
     def play_sound(self, path_to_sound, volume):
         if self.player is not None:
             self.player.play_sound(path_to_sound, volume)
+        else:
+            log.error("No player set, cannot play sound")
 
     def stop_sound(self):
         if self.player is not None:
             self.player.stop_sound()
+        else:
+            log.error("No player set, cannot stop sound")
 
     def get_audio_devices(self):
         if self.player is not None:
             return self.player.get_audio_devices()
+        log.error("No player set, cannot get audio devices")
         return []
 
 backend = SoundboardBackend()

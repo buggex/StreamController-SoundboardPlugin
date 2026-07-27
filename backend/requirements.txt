@@ -2,4 +2,5 @@ loguru
 python-vlc
 pygame
 sounddevice
+soundfile
 streamcontroller_plugin_tools
